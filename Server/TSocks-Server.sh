@@ -490,7 +490,7 @@ install_select() {
         break
         ;;
         *)
-        echo -e "[${red}错误提示${plain}] Please only enter a number [1-2]"
+        echo -e "[${red}错误提示${plain}] 请输入一个数字 [1-2]"
         ;;
     esac
     done
@@ -528,7 +528,7 @@ install_prepare_port() {
 install_prepare_cipher() {
     while true
     do
-    echo -e "请选择设置一个加密方法 ${software[${selected}-1]}:"
+    echo -e "请选择设置一种加密方法 ${software[${selected}-1]}:"
 
     if   [[ "${selected}" == "1" ]]; then
         for ((i=1;i<=${#common_ciphers[@]};i++ )); do
@@ -561,8 +561,8 @@ install_prepare_libev_obfs() {
         while true
         do
         echo -e "请问您是否需要安装 simple-obfs 流量混淆插件 ?  ${software[${selected}-1]} [y/n]"
-        read -p "(默认: n):" libev_obfs
-        [ -z "$libev_obfs" ] && libev_obfs=n
+        read -p "(默认: y):" libev_obfs
+        [ -z "$libev_obfs" ] && libev_obfs=y
         case "${libev_obfs}" in
             y|Y|n|N)
             echo
@@ -571,7 +571,7 @@ install_prepare_libev_obfs() {
             break
             ;;
             *)
-            echo -e "[${red}错误提示${plain}] Please only enter [y/n]"
+            echo -e "[${red}错误提示${plain}] 请选择输入 [y/n]"
             ;;
         esac
         done
@@ -584,7 +584,7 @@ install_prepare_libev_obfs() {
                 hint="${obfs_libev[$i-1]}"
                 echo -e "${green}${i}${plain}) ${hint}"
             done
-            read -p "Which obfs you'd select(默认: ${obfs_libev[0]}):" r_libev_obfs
+            read -p "你要选择那一个混淆方式? (默认: ${obfs_libev[0]}):" r_libev_obfs
             [ -z "$r_libev_obfs" ] && r_libev_obfs=1
             expr ${r_libev_obfs} + 1 &>/dev/null
             if [ $? -ne 0 ]; then
