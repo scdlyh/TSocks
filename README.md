@@ -8,7 +8,7 @@
 - dns使用udp不依赖解析模块转发 ✔
 - 添加obfs、privoxy模块 ✔
 - 脚本执行速度 ✔
-#### 服务端部署
+#### 服务端部署 #### 
 一键执行脚本
 ```
 wget --no-check-certificate -O TSocks.sh https://raw.githubusercontent.com/yiguihai/TSocks/master/Server/TSocks-Server.sh
