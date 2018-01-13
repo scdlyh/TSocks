@@ -847,7 +847,7 @@ install_gost(){
         config_firewall ${gostport}
     fi
     echo -e "[${yellow}配置开机启动中...${plain}]"
-    boot_init ${gost_ini} on
+    boot_init ${gost_init} on
     install_completed_gost
     install_cleanup
 }
