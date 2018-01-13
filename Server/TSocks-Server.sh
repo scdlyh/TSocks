@@ -535,7 +535,7 @@ install_prepare_cipher() {
             hint="${common_ciphers[$i-1]}"
             echo -e "${green}${i}${plain}) ${hint}"
         done
-        read -p "你要选择那一个加密方法?(默认: ${common_ciphers[0]}):" pick
+        read -p "你要选择那一个加密方法? (默认: ${common_ciphers[0]}):" pick
         [ -z "$pick" ] && pick=1
         expr ${pick} + 1 &>/dev/null
         if [ $? -ne 0 ]; then
