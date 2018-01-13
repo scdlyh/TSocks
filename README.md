@@ -44,4 +44,4 @@ chmod +x TSocks.sh
 浏览器 ⇆ redsocks2 ⇆ gost ⇆ ss-local ⇆ obfs-local
 
 ### 感谢 ###
-秋水逸冰 https://github.com/yiguihai/shadowsocks_install
+秋水逸冰 https://github.com/teddysun/shadowsocks_install
