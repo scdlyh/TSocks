@@ -292,6 +292,15 @@ download_files() {
 
 }
 
+untar_file() {
+    tar zxf ${1}
+if [ $? -ne 0 ]; then
+    echo -e "[${red}错误提示${plain}] ${libsodium_file} 解压文件 ${1} 失败!"
+    rm -fr ${1}
+    exit 1
+fi
+}
+
 boot_init() {
     local service_name=$(basename ${1})
 if   [ "${2}" == "on" ]; then
@@ -681,7 +690,7 @@ install_libsodium() {
     if [ ! -f /usr/lib/libsodium.a ]; then
         cd ${DIR}
         download "${libsodium_file}.tar.gz" "${libsodium_url}"
-        tar zxf ${libsodium_file}.tar.gz
+        untar_file ${libsodium_file}.tar.gz
         cd ${libsodium_file}
         ./configure --prefix=/usr && make && make install
         if [ $? -ne 0 ]; then
@@ -698,7 +707,7 @@ install_mbedtls() {
     if [ ! -f /usr/lib/libmbedtls.a ]; then
         cd ${DIR}
         download "${mbedtls_file}-gpl.tgz" "${mbedtls_url}"
-        tar xf ${mbedtls_file}-gpl.tgz
+        untar_file ${mbedtls_file}-gpl.tgz
         cd ${mbedtls_file}
         make SHARED=1 CFLAGS=-fPIC
         make DESTDIR=/usr install
@@ -714,7 +723,7 @@ install_mbedtls() {
 
 install_shadowsocks_libev() {
     cd ${DIR}
-    tar zxf ${shadowsocks_libev_file}.tar.gz
+    untar_file ${shadowsocks_libev_file}.tar.gz
     cd ${shadowsocks_libev_file}
     ./configure --disable-documentation && make && make install
     if [ $? -eq 0 ]; then
@@ -794,8 +803,8 @@ install_cleanup(){
     rm -rf simple-obfs
     rm -rf ${libsodium_file} ${libsodium_file}.tar.gz
     rm -rf ${mbedtls_file} ${mbedtls_file}-gpl.tgz
-    rm -rf ${shadowsocks_libev_file} ${shadowsocks_libev_file}.tar.gz
-    rm -rf ${gost_file} ${gost_file}.tar.gz
+    rm -rf ${shadowsocks_libev_file}
+    rm -rf ${gost_file}
 }
 
 install_shadowsocks(){
@@ -835,7 +844,7 @@ install_gost(){
     echo -e "[${yellow}下载文件...${plain}]"
     download_files
     echo -e "[${yellow}解压安装包...${plain}]"
-    tar -zxf ${gost_file}.tar.gz||exit $?
+    untar_file ${gost_file}.tar.gz
     echo -e "[${yellow}移动文件...${plain}]"
     mv ~/${gost_file}/gost /usr/local/bin/gost||exit $?
     echo -e "[${yellow}添加执行权限...${plain}]"
