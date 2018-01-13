@@ -1,6 +1,6 @@
 # TSocks
 [![alt text](http://yaohuo.me/tupian/yaohuo.png "title")](http://yaohuo.me)
-### 一个Android脚本版Shadowsocks启动使用脚本
+### 一个Android脚本版Shadowsocks启动使用脚本 ### 
 - 热点共享上网 ✔
 - 连接wifi不代理 ✔
 - 使用gost进行udp转发 ✔
@@ -19,12 +19,13 @@ chmod +x TSocks.sh
 ```
 ./TSocks.sh uninstall 
 ```
-#### Android使用
+#### Android使用 #### 
 1. 下载好项目文件
 2. 解压出Client文件夹，并移动文件夹到/data 或者/system/bin 目录下
 3. 将Client目录和文件权限更改为全满 0777
 4. 然后执行 “开启.sh” 脚本即可
-##### 配置文件 #####
+##### 配置文件 ##### 
+
 - TSocks.conf 脚本主要配置文件
 - copyright.acl https版权问题放行文件
 - tsocks.action http破版权文件
@@ -35,11 +36,12 @@ chmod +x TSocks.sh
 [站大爷](http://ip.zdaye.com/?ip=&port=&adr=&checktime=&sleep=1&cunhuo=&nport=&nadr=&dengji=&https=&yys=&post=%d6%a7%b3%d6&px=3)
 随便找个 替换掉tsocks.action文件中的 58.240.53.194:80 这个代理
 
-#### 参考流量转发图
-######TCP流量
-浏览器 ⇆ redsocks ⇆ ss-local ⇆ obfs-local
-######UDP流量
+#### 参考流量转发图 #### 
+
+###### TCP流量 ###### 
+浏览器 ⇆ redsocks ⇆ ss-local ⇆ obfs-local 
+###### UDP流量 ######
 浏览器 ⇆ redsocks2 ⇆ gost ⇆ ss-local ⇆ obfs-local
 
-### 感谢
+### 感谢 ###
 秋水逸冰 https://github.com/yiguihai/shadowsocks_install
