@@ -507,7 +507,7 @@ install_select() {
 }
 
 install_prepare_password() {
-    echo "请设置一个密码 ${software[${selected}-1]}"
+    echo "请设置一个密码 for ${software[${selected}-1]}"
     read -p "(默认密码: teddysun.com):" shadowsockspwd
     [ -z "${shadowsockspwd}" ] && shadowsockspwd="teddysun.com"
     echo
@@ -518,7 +518,7 @@ install_prepare_password() {
 install_prepare_port() {
     while true
     do
-    echo -e "请设置一个端口 ${software[${selected}-1]} [1-65535]"
+    echo -e "请设置一个端口 for ${software[${selected}-1]} [1-65535]"
     read -p "(默认端口: 8989):" shadowsocksport
     [ -z "${shadowsocksport}" ] && shadowsocksport="8989"
     expr ${shadowsocksport} + 1 &>/dev/null
@@ -537,7 +537,7 @@ install_prepare_port() {
 install_prepare_cipher() {
     while true
     do
-    echo -e "请选择设置一种加密方法 ${software[${selected}-1]}:"
+    echo -e "请选择设置一种加密方法 for ${software[${selected}-1]}:"
 
     if   [[ "${selected}" == "1" ]]; then
         for ((i=1;i<=${#common_ciphers[@]};i++ )); do
@@ -569,7 +569,7 @@ install_prepare_libev_obfs() {
     if autoconf_version; then
         while true
         do
-        echo -e "请问您是否需要安装 simple-obfs 流量混淆插件 ?  ${software[${selected}-1]} [y/n]"
+        echo -e "请问您是否需要安装 simple-obfs 流量混淆插件? for ${software[${selected}-1]} [y/n]"
         read -p "(默认: y):" libev_obfs
         [ -z "$libev_obfs" ] && libev_obfs=y
         case "${libev_obfs}" in
@@ -644,7 +644,7 @@ install_prepare_gost_ip() {
 }
 
 install_prepare_gost_port() {
-    echo "请设置一个服务端口 ${software[${selected}-1]}"
+    echo "请设置一个服务端口 for ${software[${selected}-1]}"
     read -p "(默认: 1080):" gostport
     [ -z "${gostport}" ] && gostport="1080"
     echo
