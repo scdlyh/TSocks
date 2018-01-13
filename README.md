@@ -1,6 +1,5 @@
 # TSocks
-[![alt text](http://yaohuo.me/tupian/yaohuo.png "title")](http://yaohuo.me)
-<yiguihai@gmail.com>
+[![alt text](http://yaohuo.me/tupian/yaohuo.png "title")](http://yaohuo.me) 
 ### 一个Android脚本版Shadowsocks启动使用脚本 ### 
 - 热点共享上网 ✔
 - 连接wifi不代理 ✔
