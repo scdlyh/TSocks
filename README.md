@@ -26,9 +26,9 @@ chmod +x TSocks.sh
 4. 然后执行 “开启.sh” 脚本即可
 ##### 配置文件 ##### 
 
-- TSocks.conf //脚本主要配置文件
-- copyright.acl //https版权问题放行文件
-- tsocks.action //http破版权文件
+- TSocks.conf #脚本主要配置文件
+- copyright.acl #https版权问题放行文件
+- tsocks.action #http破版权文件
 
 关于版权地区限制：使用了privoxy处理，只要找到中国大陆地区的http类型的ip代理就可以破解(可免), https检测方法需要acl文件配置直连放行。(消耗流量)
 
