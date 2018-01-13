@@ -50,10 +50,10 @@ print_info(){
     clear
     echo
 echo "#############################################################"
-echo "# One click Install ShadowsocksR Server                     #"
-echo "# Intro: https://shadowsocks.be/9.html                      #"
-echo "# Author: Teddysun <i@teddysun.com>                         #"
-echo "# Github: https://github.com/shadowsocksr/shadowsocksr      #"
+echo "# One click Install Shadowsocks+gost Server                 #"
+echo "# Intro: https://qxgfw.wodemo.com.                          #"
+echo "# Author: 强插GFW <yiguihai@gmail.com>                       #"
+echo "# Github: https://github.com/yiguihai/TSocks                #"
 echo "#############################################################"
 echo
 }
