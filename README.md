@@ -1,13 +1,11 @@
 # TSocks
 [![alt text](http://yaohuo.me/tupian/yaohuo.png "title")](http://yaohuo.me) 
 ### 一个Android脚本版Shadowsocks启动使用脚本 ### 
-- 热点共享上网 ✔
-- 连接wifi不代理 ✔
-- 使用gost进行udp转发 ✔
-- 破版权地区限制 ✔
-- dns使用udp不依赖解析模块转发 ✔
-- 添加obfs、privoxy模块 ✔
-- 脚本执行速度 ✔
+- 网络共享数据流量时全部设备走代理 ✔
+- 只代理数据网络流量，连接wifi网络时不代理。互不干扰 ✔
+- 使用gost进行udp转发达到udp over tcp效果 ✔
+- 破大陆的音乐、视频软件，版权地区限制 ✔
+- dns解析使用udp不依赖dns解析模块转发 ✔
 #### 服务端部署 #### 
 一键执行脚本
 ```
