@@ -51,8 +51,7 @@ print_info(){
     echo
 echo "#############################################################"
 echo "# One click Install Shadowsocks+gost Server                 #"
-echo "# Intro: https://qxgfw.wodemo.com.                          #"
-echo "# Author: 强插GFW <yiguihai@gmail.com>                       #"
+echo "# Intro: https://qxgfw.wodemo.com                           #"
 echo "# Github: https://github.com/yiguihai/TSocks                #"
 echo "#############################################################"
 echo
@@ -536,7 +535,7 @@ install_prepare_cipher() {
             hint="${common_ciphers[$i-1]}"
             echo -e "${green}${i}${plain}) ${hint}"
         done
-        read -p "Which cipher you'd select(默认: ${common_ciphers[0]}):" pick
+        read -p "你要选择那一个加密方法?(默认: ${common_ciphers[0]}):" pick
         [ -z "$pick" ] && pick=1
         expr ${pick} + 1 &>/dev/null
         if [ $? -ne 0 ]; then
