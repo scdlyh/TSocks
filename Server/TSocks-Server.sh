@@ -38,13 +38,13 @@ mbedtls_url="https://tls.mbed.org/download/mbedtls-2.6.0-gpl.tgz"
 
 shadowsocks_libev_init="/etc/init.d/shadowsocks-libev"
 shadowsocks_libev_config="/etc/shadowsocks-libev/config.json"
-shadowsocks_libev_centos="https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-libev"
-shadowsocks_libev_debian="https://raw.githubusercontent.com/teddysun/shadowsocks_install/master/shadowsocks-libev-debian"
+shadowsocks_libev_centos="https://raw.githubusercontent.com/yiguihai/TSocks/master/Server/shadowsocks-libev.sh"
+shadowsocks_libev_debian="https://raw.githubusercontent.com/yiguihai/TSocks/master/Server/shadowsocks-libev-debian.sh"
 
 gost_init="/etc/init.d/gost"
 gost_config="/usr/local/bin/gost.json"
-gost_centos="https://qxgfw.wodemo.com/down/468098/gost.sh"
-gost_debian="https://qxgfw.wodemo.com/down/468099/gost-debian.sh"
+gost_centos="https://raw.githubusercontent.com/yiguihai/TSocks/master/Server/gost.sh"
+gost_debian="https://raw.githubusercontent.com/yiguihai/TSocks/master/Server/gost-debian.sh"
 
 print_info(){
     clear
