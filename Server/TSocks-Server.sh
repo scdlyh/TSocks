@@ -761,7 +761,7 @@ install_completed_libev() {
     echo -e "Your obfs             : ${red} ${shadowsocklibev_obfs} ${plain}"
     fi
     if [ "$fast_open" ]; then
-    echo -e "TCP Fast Open             : ${red} ${fast_open} ${plain}"
+    echo -e "TCP Fast Open         : ${red} ${fast_open} ${plain}"
     fi
 }
 
