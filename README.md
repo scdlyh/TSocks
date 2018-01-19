@@ -13,6 +13,11 @@ wget --no-check-certificate -O TSocks.sh https://raw.githubusercontent.com/yigui
 chmod +x TSocks.sh
 ./TSocks.sh 2>&1 | tee TSocks.log
 ```
+BBR安装脚本
+```
+wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh && chmod +x bbr.sh && ./bbr.sh
+```
+
 卸载
 ```
 ./TSocks.sh uninstall 
