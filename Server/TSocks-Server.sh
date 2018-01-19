@@ -783,6 +783,7 @@ install_completed_gost() {
     echo -e "Your Server Port      : ${red} ${gostport} ${plain}"
     echo -e "Your Username         : ${red} ${gostuser} ${plain}"
     echo -e "Your Password: ${red} ${gostpwd} ${plain}"
+    exit $?
 }
 
 qr_generate_libev() {
