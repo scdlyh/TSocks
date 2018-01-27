@@ -508,8 +508,8 @@ install_select() {
 
 install_prepare_password() {
     echo "请设置一个密码 for ${software[${selected}-1]}"
-    read -p "(默认密码: teddysun.com):" shadowsockspwd
-    [ -z "${shadowsockspwd}" ] && shadowsockspwd="teddysun.com"
+    read -p "(默认密码: admin):" shadowsockspwd
+    [ -z "${shadowsockspwd}" ] && shadowsockspwd="admin"
     echo
     echo "你输入的密码 = ${shadowsockspwd}"
     echo
@@ -519,8 +519,8 @@ install_prepare_port() {
     while true
     do
     echo -e "请设置一个端口 for ${software[${selected}-1]} [1-65535]"
-    read -p "(默认端口: 8989):" shadowsocksport
-    [ -z "${shadowsocksport}" ] && shadowsocksport="8989"
+    read -p "(默认端口: 80):" shadowsocksport
+    [ -z "${shadowsocksport}" ] && shadowsocksport="80"
     expr ${shadowsocksport} + 1 &>/dev/null
     if [ $? -eq 0 ]; then
         if [ ${shadowsocksport} -ge 1 ] && [ ${shadowsocksport} -le 65535 ] && [ ${shadowsocksport:0:1} != 0 ]; then
@@ -636,8 +636,8 @@ install_prepare_gost_password() {
 
 install_prepare_gost_ip() {
     echo "请设置一个监听地址 for ${software[${selected}-1]}"
-    read -p "(默认: 0.0.0.0):" gostaddress
-    [ -z "${gostaddress}" ] && gostaddress="0.0.0.0"
+    read -p "(默认: 127.0.0.1):" gostaddress
+    [ -z "${gostaddress}" ] && gostaddress="127.0.0.1"
     echo
     echo "监听地址 = ${gostaddress}"
     echo
