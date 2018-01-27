@@ -40,7 +40,7 @@ fi
 $DIR/Core/privoxy --pidfile $DIR/Pid/privoxy.pid $DIR/Core/Privoxy-3.0.26/privoxy.conf
 $DIR/Core/redsocks -c $DIR/Core/redsocks.conf -p $DIR/Pid/redsocks.pid
 $DIR/Core/ss-local -s $server -p $server_port -k $password -m $method -b 127.0.0.1 -l 1025 --acl $DIR/copyright.acl -f $DIR/Pid/ss-local.pid -a 3004
-#dns解析与udp转发
+#dns解析
 if [[ "$TP" = 'Fail' || "$gost" = '' || "$gost_port" = '' ]]; then
 $DIR/Core/pdnsd -c $DIR/Core/pdnsd.conf -p $DIR/Pid/pdnsd.pid||$DIR/Core/tdns -a 0.0.0.0 -b 1053 -c 127.0.0.1 -d 1024 -u 3004 -x 182.254.116.116 -p $DIR/Pid/tdns.pid
 fi
@@ -76,6 +76,7 @@ iptables -t mangle -A OUTPUT -j redsocks2_out
 iptables -t mangle -A redsocks2_out -j redsocks2_lan
 iptables -t mangle -A redsocks2_out -o tun+ -j ACCEPT
 iptables -t mangle -A redsocks2_out -s 192.168.0.0/16 -j ACCEPT
+iptables -t mangle -A redsocks2_out -d ${server} -j ACCEPT
 iptables -t mangle -A redsocks2_out -p udp -j MARK --set-mark 0x2333
 }
 
@@ -89,6 +90,7 @@ iptables -t nat -A nat_lan -d $lan -j ACCEPT
 done
 iptables -t nat -A nat_lan -o tun+ -j ACCEPT
 iptables -t nat -A nat_lan -s 192.168.0.0/16 -j ACCEPT
+iptables -t nat -A nat_lan -d ${server} -j ACCEPT
 iptables -t nat -A nat_lan -m owner --uid-owner 3004 -j ACCEPT
 iptables -t nat -N nat_forward
 iptables -t nat -A nat_lan -j nat_forward
@@ -97,7 +99,7 @@ iptables -t nat -A nat_forward -p tcp -j REDIRECT --to-ports 1024
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 #UDP转发
 set_iptables_udp
-#统一发送到谷歌提供的DNS
+#统一发送到Google提供的DNS
 iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 8.8.8.8:53
 fi
 if [[ "$TP" = 'Fail' || "$gost" = '' || "$gost_port" = '' ]]; then
@@ -111,6 +113,7 @@ iptables -t nat -A OUTPUT -j nat_lan
 iptables -t filter -N super_filter
 iptables -t filter -A super_filter -o tun+ -j ACCEPT
 iptables -t filter -A super_filter -s 192.168.0.0/16 -j ACCEPT
+iptables -t filter -A super_filter -d ${server} -j ACCEPT
 for lan in $LAN
 do
 iptables -t filter -A super_filter -d $lan -j ACCEPT
