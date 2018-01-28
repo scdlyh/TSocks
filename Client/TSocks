@@ -1,7 +1,5 @@
-#!/system/bin/sh
-
-#当前目录路径
-DIR="`pwd`"||DIR="`busybox pwd`"||DIR="`toybox pwd`"||DIR="${0%/*}" > /dev/null 2>&1
+#执行路径
+BIN=${2};DIR=${3}
 #局域网地址
 LAN="10.0.0.0/8,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16,224.0.0.0/3"
 #代理核心
@@ -18,7 +16,8 @@ fi
 
 function make_conf ()
 {
-echo "confdir $DIR/Core/Privoxy-3.0.26
+cat > $DIR/Core/Privoxy-3.0.26/privoxy.conf << EOF
+confdir $DIR/Core/Privoxy-3.0.26
 logdir /sdcard
 actionsfile $DIR/tsocks.action
 logfile privoxy.log
@@ -26,7 +25,7 @@ listen-address  0.0.0.0:8118
 accept-intercepted-requests 1
 #开启调试，日志放在/sdcard/privoxy.log文件中
 #debug 1
-" > $DIR/Core/Privoxy-3.0.26/privoxy.conf
+EOF
 }
 
 function start_core ()
@@ -60,70 +59,70 @@ fi
 function set_iptables_udp ()
 {
 #mangle表
-iptables -t mangle -N redsocks2_pre
-iptables -t mangle -N redsocks2_lan
-iptables -t mangle -N redsocks2_out
+$BIN/iptables -t mangle -N redsocks2_pre
+$BIN/iptables -t mangle -N redsocks2_lan
+$BIN/iptables -t mangle -N redsocks2_out
 for lan in $LAN
 do
-iptables -t mangle -A redsocks2_lan -d $lan -j ACCEPT
+$BIN/iptables -t mangle -A redsocks2_lan -d $lan -j ACCEPT
 done
-iptables -t mangle -A redsocks2_pre -j redsocks2_lan
-iptables -t mangle -A redsocks2_pre -p udp -j TPROXY --on-port 1230 --on-ip 127.0.0.1 --tproxy-mark 0x2333
-ip rule add fwmark 0x2333 table 123
-ip route add local 0.0.0.0/0 dev lo table 123
-iptables -t mangle -A PREROUTING -j redsocks2_pre
-iptables -t mangle -A OUTPUT -j redsocks2_out
-iptables -t mangle -A redsocks2_out -j redsocks2_lan
-iptables -t mangle -A redsocks2_out -o tun+ -j ACCEPT
-iptables -t mangle -A redsocks2_out -s 192.168.0.0/16 -j ACCEPT
-iptables -t mangle -A redsocks2_out -d ${server} -j ACCEPT
-iptables -t mangle -A redsocks2_out -p udp -j MARK --set-mark 0x2333
+$BIN/iptables -t mangle -A redsocks2_pre -j redsocks2_lan
+$BIN/iptables -t mangle -A redsocks2_pre -p udp -j TPROXY --on-port 1230 --on-ip 127.0.0.1 --tproxy-mark 0x2333
+$BIN/ip rule add fwmark 0x2333 table 123
+$BIN/ip route add local 0.0.0.0/0 dev lo table 123
+$BIN/iptables -t mangle -A PREROUTING -j redsocks2_pre
+$BIN/iptables -t mangle -A OUTPUT -j redsocks2_out
+$BIN/iptables -t mangle -A redsocks2_out -j redsocks2_lan
+$BIN/iptables -t mangle -A redsocks2_out -o tun+ -j ACCEPT
+$BIN/iptables -t mangle -A redsocks2_out -s 192.168.0.0/16 -j ACCEPT
+$BIN/iptables -t mangle -A redsocks2_out -d ${server} -j ACCEPT
+$BIN/iptables -t mangle -A redsocks2_out -p udp -j MARK --set-mark 0x2333
 }
 
 function set_iptables ()
 {
 #nat表
-iptables -t nat -N nat_lan
+$BIN/iptables -t nat -N nat_lan
 for lan in $LAN
 do
-iptables -t nat -A nat_lan -d $lan -j ACCEPT
+$BIN/iptables -t nat -A nat_lan -d $lan -j ACCEPT
 done
-iptables -t nat -A nat_lan -o tun+ -j ACCEPT
-iptables -t nat -A nat_lan -s 192.168.0.0/16 -j ACCEPT
-iptables -t nat -A nat_lan -d ${server} -j ACCEPT
-iptables -t nat -A nat_lan -m owner --uid-owner 3004 -j ACCEPT
-iptables -t nat -N nat_forward
-iptables -t nat -A nat_lan -j nat_forward
-iptables -t nat -A nat_forward -p tcp --dport 80 -j REDIRECT --to-ports 8118
-iptables -t nat -A nat_forward -p tcp -j REDIRECT --to-ports 1024
+$BIN/iptables -t nat -A nat_lan -o tun+ -j ACCEPT
+$BIN/iptables -t nat -A nat_lan -s 192.168.0.0/16 -j ACCEPT
+$BIN/iptables -t nat -A nat_lan -d ${server} -j ACCEPT
+$BIN/iptables -t nat -A nat_lan -m owner --uid-owner 3004 -j ACCEPT
+$BIN/iptables -t nat -N nat_forward
+$BIN/iptables -t nat -A nat_lan -j nat_forward
+$BIN/iptables -t nat -A nat_forward -p tcp --dport 80 -j REDIRECT --to-ports 8118
+$BIN/iptables -t nat -A nat_forward -p tcp -j REDIRECT --to-ports 1024
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 #UDP转发
 set_iptables_udp
 #统一发送到Google提供的DNS
-iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 8.8.8.8:53
+$BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 8.8.8.8:53
 fi
 if [[ "$TP" = 'Fail' || "$gost" = '' || "$gost_port" = '' ]]; then
 #使用模块解析DNS
-iptables -t nat -A nat_forward -p udp --dport 53 -j REDIRECT --to-ports 1053
+$BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j REDIRECT --to-ports 1053
 fi
-iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
-iptables -t nat -A OUTPUT -j nat_lan
+$BIN/iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
+$BIN/iptables -t nat -A OUTPUT -j nat_lan
 
 #filter表
-iptables -t filter -N super_filter
-iptables -t filter -A super_filter -o tun+ -j ACCEPT
-iptables -t filter -A super_filter -s 192.168.0.0/16 -j ACCEPT
-iptables -t filter -A super_filter -d ${server} -j ACCEPT
+$BIN/iptables -t filter -N super_filter
+$BIN/iptables -t filter -A super_filter -o tun+ -j ACCEPT
+$BIN/iptables -t filter -A super_filter -s 192.168.0.0/16 -j ACCEPT
+$BIN/iptables -t filter -A super_filter -d ${server} -j ACCEPT
 for lan in $LAN
 do
-iptables -t filter -A super_filter -d $lan -j ACCEPT
+$BIN/iptables -t filter -A super_filter -d $lan -j ACCEPT
 done
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
-iptables -t filter -A super_filter -p udp -j ACCEPT
+$BIN/iptables -t filter -A super_filter -p udp -j ACCEPT
 fi
-iptables -t filter -A super_filter -m owner --uid-owner 3004 -j ACCEPT
-iptables -t filter -A super_filter -m comment --comment "丢弃所有不符合防火墙规则的数据包" -j DROP||iptables -t filter -A super_filter -j DROP
-iptables -t filter -A OUTPUT -j super_filter
+$BIN/iptables -t filter -A super_filter -m owner --uid-owner 3004 -j ACCEPT
+$BIN/iptables -t filter -A super_filter -m comment --comment "丢弃所有不符合防火墙规则的数据包" -j DROP||$BIN/iptables -t filter -A super_filter -j DROP
+$BIN/iptables -t filter -A OUTPUT -j super_filter
 }
 
 
@@ -141,54 +140,54 @@ function check_iptables ()
 {
 echo
 echo -e "❁ nat表nat_lan链:"
-iptables -vxn -t nat -L nat_lan --line-number
+$BIN/iptables -vxn -t nat -L nat_lan --line-number
 echo
 echo -e "❁ nat表nat_forward链:"
-iptables -vxn -t nat -L nat_forward --line-number
+$BIN/iptables -vxn -t nat -L nat_forward --line-number
 if [ $TP = 'Success' ]; then
 echo
 echo -e "❁ mangle表redsocks2_pre链:"
-iptables -vxn -t mangle -L redsocks2_pre --line-number
+$BIN/iptables -vxn -t mangle -L redsocks2_pre --line-number
 echo
 echo -e "❁ mangle表redsocks2_lan链:"
-iptables -vxn -t mangle -L redsocks2_lan --line-number
+$BIN/iptables -vxn -t mangle -L redsocks2_lan --line-number
 echo
 echo -e "❁ mangle表redsocks2_out链:"
-iptables -vxn -t mangle -L redsocks2_out --line-number
+$BIN/iptables -vxn -t mangle -L redsocks2_out --line-number
 fi
 echo
 echo -e "❁ filter表super_filter链:"
-iptables -vxn -t filter -L super_filter --line-number
+$BIN/iptables -vxn -t filter -L super_filter --line-number
 } 2> /dev/null
 
 function clear_iptables ()
 {
 if [ $TP = 'Success' ]; then
-ip rule del fwmark 0x2333 table 123
-ip route del local 0.0.0.0/0 dev lo table 123
+$BIN/ip rule del fwmark 0x2333 table 123
+$BIN/ip route del local 0.0.0.0/0 dev lo table 123
 
-iptables -t mangle -D PREROUTING -j redsocks2_pre
-iptables -t mangle -D OUTPUT -j redsocks2_out
+$BIN/iptables -t mangle -D PREROUTING -j redsocks2_pre
+$BIN/iptables -t mangle -D OUTPUT -j redsocks2_out
 
 for xx in redsocks2_pre redsocks2_out redsocks2_lan
 do
-iptables -t mangle -F $xx
-iptables -t mangle -X $xx
+$BIN/iptables -t mangle -F $xx
+$BIN/iptables -t mangle -X $xx
 done
 fi
 
-iptables -t nat -D PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
-iptables -t nat -D OUTPUT -j nat_lan
-iptables -t filter -D OUTPUT -j super_filter
+$BIN/iptables -t nat -D PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
+$BIN/iptables -t nat -D OUTPUT -j nat_lan
+$BIN/iptables -t filter -D OUTPUT -j super_filter
 
 for xx in nat_lan nat_forward nat_forward_uid
 do
-iptables -t nat -F $xx
-iptables -t nat -X $xx
+$BIN/iptables -t nat -F $xx
+$BIN/iptables -t nat -X $xx
 done
 #filter
-iptables -t filter -F super_filter
-iptables -t filter -X super_filter
+$BIN/iptables -t filter -F super_filter
+$BIN/iptables -t filter -X super_filter
 } 2> /dev/null
 
 function kill_core ()
@@ -199,19 +198,19 @@ $DIR/Core/busybox kill `$DIR/Core/busybox pgrep $run`
 done
 for pid in $DIR/Pid/*.pid
 do
-$DIR/Core/busybox kill `cat $pid`
+$DIR/Core/busybox kill `$DIR/Core/busybox cat $pid`
 done
-rm -f $DIR/Pid/*.pid
+$DIR/Core/busybox rm -f $DIR/Pid/*.pid
 } 2> /dev/null
-
-case $1 in
-   -s) set_iptables;make_conf;start_core;;
-   -x) kill_core;clear_iptables;;
-esac
 
 if [ $TP = 'Fail' ]; then
 echo
 echo "你的设备内核不支持TPROXY"
 echo
 fi
-check_core;check_iptables
+
+case ${1} in
+   -s) set_iptables;make_conf;start_core;;
+   -x) kill_core;clear_iptables;;
+   -c) check_core;check_iptables;;
+esac
