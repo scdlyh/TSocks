@@ -1,11 +1,13 @@
 #执行路径
 BIN=${2};DIR=${3}
-#局域网地址
-LAN="10.0.0.0/8,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16,224.0.0.0/3"
-#代理核心
-mc="redsocks pdnsd redsocks2 gost privoxy tdns ss-local obfs-local"
+echo -e "内置命令路径: ${2}"
+echo -e "脚本执行路径: ${3}"
 #脚本配置文件
 source $DIR/TSocks.conf||exit $?
+#局域网地址
+LAN="10.0.0.0/8,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16,224.0.0.0/3,${server}/32"
+#代理核心
+mc="redsocks pdnsd redsocks2 gost privoxy tdns ss-local obfs-local"
 #检测内核TPROXY模块
 $DIR/Core/busybox grep -qwE 'TPROXY' /proc/net/ip_tables_targets
 if [ $? = 0 ]; then
@@ -30,22 +32,38 @@ EOF
 
 function start_core ()
 {
+echo -e "##### Shadowsocks #####"
+echo -e "服务器: ${server}"
+echo -e "远程端口: ${server_port}"
+echo -e "密码: ${password}"
+echo -e "加密方式: ${method}"
 #混淆参数
 if [[ "$obfs" != "" && "$obfs_host" != "" ]]; then
-$DIR/Core/obfs-local -s $server -p $server_port -b 127.0.0.1 -l 1026 --obfs $obfs --obfs-host $obfs_host -f $DIR/Pid/obfs-local.pid -a 3004
+echo -e "混淆方式: ${obfs}"
+echo -e "混淆Host: ${obfs_host}"
+$DIR/Core/obfs-local -s $server -p $server_port -b 127.0.0.1 -l 1026 --obfs $obfs --obfs-host $obfs_host -f $DIR/Pid/obfs-local.pid
 server="127.0.0.1"
 server_port="1026"
 fi
 $DIR/Core/privoxy --pidfile $DIR/Pid/privoxy.pid $DIR/Core/Privoxy-3.0.26/privoxy.conf
 $DIR/Core/redsocks -c $DIR/Core/redsocks.conf -p $DIR/Pid/redsocks.pid
-$DIR/Core/ss-local -s $server -p $server_port -k $password -m $method -b 127.0.0.1 -l 1025 --acl $DIR/copyright.acl -f $DIR/Pid/ss-local.pid -a 3004
+$DIR/Core/ss-local -s $server -p $server_port -k $password -m $method -b 127.0.0.1 -l 1025 --acl $DIR/copyright.acl -f $DIR/Pid/ss-local.pid
 #dns解析
-if [[ "$TP" = 'Fail' || "$gost" = '' || "$gost_port" = '' ]]; then
-$DIR/Core/pdnsd -c $DIR/Core/pdnsd.conf -p $DIR/Pid/pdnsd.pid||$DIR/Core/tdns -a 0.0.0.0 -b 1053 -c 127.0.0.1 -d 1024 -u 3004 -x 182.254.116.116 -p $DIR/Pid/tdns.pid
+if [ $dns = 2 ]; then
+$DIR/Core/pdnsd -c $DIR/Core/pdnsd.conf -p $DIR/Pid/pdnsd.pid
+mdns="pdnsd"
+elif [ $dns = 3 ]; then
+$DIR/Core/tdns -a 0.0.0.0 -b 1053 -c 127.0.0.1 -d 1024 -x 182.254.116.116 -p $DIR/Pid/tdns.pid
+echo -e "tdns"
 fi
+echo -e "##### Gost #####"
+echo -e "服务器: ${gost}"
+echo -e "端口: ${gost_port}"
 #gost用户与密码
 if [[ "$gost_user" != "" && "$gost_password" != "" ]]; then
 up="$gost_user:$gost_password@"
+echo -e "用户名: ${gost_user}"
+echo -e "密码: ${gost_password}"
 fi
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 $DIR/Core/UDPoverTCP/redsocks2 -c $DIR/Core/UDPoverTCP/redsocks2.conf -p $DIR/Pid/redsocks2.pid
@@ -75,7 +93,6 @@ $BIN/iptables -t mangle -A OUTPUT -j redsocks2_out
 $BIN/iptables -t mangle -A redsocks2_out -j redsocks2_lan
 $BIN/iptables -t mangle -A redsocks2_out -o tun+ -j ACCEPT
 $BIN/iptables -t mangle -A redsocks2_out -s 192.168.0.0/16 -j ACCEPT
-$BIN/iptables -t mangle -A redsocks2_out -d ${server} -j ACCEPT
 $BIN/iptables -t mangle -A redsocks2_out -p udp -j MARK --set-mark 0x2333
 }
 
@@ -89,22 +106,26 @@ $BIN/iptables -t nat -A nat_lan -d $lan -j ACCEPT
 done
 $BIN/iptables -t nat -A nat_lan -o tun+ -j ACCEPT
 $BIN/iptables -t nat -A nat_lan -s 192.168.0.0/16 -j ACCEPT
-$BIN/iptables -t nat -A nat_lan -d ${server} -j ACCEPT
-$BIN/iptables -t nat -A nat_lan -m owner --uid-owner 3004 -j ACCEPT
 $BIN/iptables -t nat -N nat_forward
 $BIN/iptables -t nat -A nat_lan -j nat_forward
 $BIN/iptables -t nat -A nat_forward -p tcp --dport 80 -j REDIRECT --to-ports 8118
 $BIN/iptables -t nat -A nat_forward -p tcp -j REDIRECT --to-ports 1024
+echo -e "##### DNS转发 #####"
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 #UDP转发
+echo -e "开启UDP Over TCP 转发支持"
 set_iptables_udp
+fi
+
+if [[ "$TP" = 'Success' && "$dns" = 1 ]]; then
 #统一发送到Google提供的DNS
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 8.8.8.8:53
-fi
-if [[ "$TP" = 'Fail' || "$gost" = '' || "$gost_port" = '' ]]; then
+mdns="Google"
+else
 #使用模块解析DNS
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j REDIRECT --to-ports 1053
 fi
+echo -e "DNS解析: ${mdns}"
 $BIN/iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
 $BIN/iptables -t nat -A OUTPUT -j nat_lan
 
@@ -112,7 +133,6 @@ $BIN/iptables -t nat -A OUTPUT -j nat_lan
 $BIN/iptables -t filter -N super_filter
 $BIN/iptables -t filter -A super_filter -o tun+ -j ACCEPT
 $BIN/iptables -t filter -A super_filter -s 192.168.0.0/16 -j ACCEPT
-$BIN/iptables -t filter -A super_filter -d ${server} -j ACCEPT
 for lan in $LAN
 do
 $BIN/iptables -t filter -A super_filter -d $lan -j ACCEPT
@@ -120,7 +140,6 @@ done
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 $BIN/iptables -t filter -A super_filter -p udp -j ACCEPT
 fi
-$BIN/iptables -t filter -A super_filter -m owner --uid-owner 3004 -j ACCEPT
 $BIN/iptables -t filter -A super_filter -m comment --comment "丢弃所有不符合防火墙规则的数据包" -j DROP||$BIN/iptables -t filter -A super_filter -j DROP
 $BIN/iptables -t filter -A OUTPUT -j super_filter
 }
@@ -158,6 +177,9 @@ fi
 echo
 echo -e "❁ filter表super_filter链:"
 $BIN/iptables -vxn -t filter -L super_filter --line-number
+echo
+echo -e "❁ 监听信息:"
+$DIR/Core/busybox netstat -lntp
 } 2> /dev/null
 
 function clear_iptables ()
@@ -180,7 +202,7 @@ $BIN/iptables -t nat -D PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_
 $BIN/iptables -t nat -D OUTPUT -j nat_lan
 $BIN/iptables -t filter -D OUTPUT -j super_filter
 
-for xx in nat_lan nat_forward nat_forward_uid
+for xx in nat_lan nat_forward
 do
 $BIN/iptables -t nat -F $xx
 $BIN/iptables -t nat -X $xx
@@ -214,3 +236,5 @@ case ${1} in
    -x) kill_core;clear_iptables;;
    -c) check_core;check_iptables;;
 esac
+echo
+echo "脚本执行完毕！"
