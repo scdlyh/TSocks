@@ -2,6 +2,7 @@
 BIN=${2};DIR=${3}
 echo -e "内置命令路径: ${2}"
 echo -e "脚本执行路径: ${3}"
+echo
 #脚本配置文件
 source $DIR/TSocks.conf||exit $?
 #局域网地址
@@ -56,6 +57,7 @@ elif [ $dns = 3 ]; then
 $DIR/Core/tdns -a 0.0.0.0 -b 1053 -c 127.0.0.1 -d 1024 -x 182.254.116.116 -p $DIR/Pid/tdns.pid
 echo -e "tdns"
 fi
+echo
 echo -e "##### Gost #####"
 echo -e "服务器: ${gost}"
 echo -e "端口: ${gost_port}"
@@ -70,7 +72,8 @@ $DIR/Core/UDPoverTCP/redsocks2 -c $DIR/Core/UDPoverTCP/redsocks2.conf -p $DIR/Pi
 $DIR/Core/busybox setsid $DIR/Core/UDPoverTCP/gost -L=127.0.0.1:1231 -F=socks5://127.0.0.1:1025 -F=socks5://$up$gost:$gost_port &
 echo "$!" > $DIR/Pid/gost.pid
 fi
-echo -e "##### DNS转发 #####"
+echo
+echo -e "##### DNS #####"
 echo -e "DNS解析: ${mdns}"
 }
 
