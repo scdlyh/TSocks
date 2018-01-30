@@ -70,8 +70,8 @@ $DIR/Core/UDPoverTCP/redsocks2 -c $DIR/Core/UDPoverTCP/redsocks2.conf -p $DIR/Pi
 $DIR/Core/busybox setsid $DIR/Core/UDPoverTCP/gost -L=127.0.0.1:1231 -F=socks5://127.0.0.1:1025 -F=socks5://$up$gost:$gost_port &
 echo "$!" > $DIR/Pid/gost.pid
 fi
-
-
+echo -e "##### DNS转发 #####"
+echo -e "DNS解析: ${mdns}"
 }
 
 function set_iptables_udp ()
@@ -110,10 +110,8 @@ $BIN/iptables -t nat -N nat_forward
 $BIN/iptables -t nat -A nat_lan -j nat_forward
 $BIN/iptables -t nat -A nat_forward -p tcp --dport 80 -j REDIRECT --to-ports 8118
 $BIN/iptables -t nat -A nat_forward -p tcp -j REDIRECT --to-ports 1024
-echo -e "##### DNS转发 #####"
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 #UDP转发
-echo -e "开启UDP Over TCP 转发支持"
 set_iptables_udp
 fi
 
@@ -125,7 +123,6 @@ else
 #使用模块解析DNS
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j REDIRECT --to-ports 1053
 fi
-echo -e "DNS解析: ${mdns}"
 $BIN/iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
 $BIN/iptables -t nat -A OUTPUT -j nat_lan
 
