@@ -55,7 +55,7 @@ $DIR/Core/pdnsd -c $DIR/Core/pdnsd.conf -p $DIR/Pid/pdnsd.pid
 mdns="pdnsd"
 elif [ $dns = 3 ]; then
 $DIR/Core/tdns -a 0.0.0.0 -b 1053 -c 127.0.0.1 -d 1024 -x 182.254.116.116 -p $DIR/Pid/tdns.pid
-echo -e "tdns"
+mdns="tdns"
 fi
 echo
 echo -e "##### Gost #####"
