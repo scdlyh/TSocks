@@ -8,7 +8,7 @@ source $DIR/TSocks.conf||exit $?
 #局域网地址
 LAN="10.0.0.0/8,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16,224.0.0.0/3,${server}/32"
 #代理核心
-mc="redsocks pdnsd redsocks2 gost privoxy tdns ss-local obfs-local"
+mc="redsocks pdnsd redsocks2 gost privoxy ss-local obfs-local"
 #检测内核TPROXY模块
 $DIR/Core/busybox grep -qwE 'TPROXY' /proc/net/ip_tables_targets
 if [ $? = 0 ]; then
@@ -50,12 +50,8 @@ $DIR/Core/privoxy --pidfile $DIR/Pid/privoxy.pid $DIR/Core/Privoxy-3.0.26/privox
 $DIR/Core/redsocks -c $DIR/Core/redsocks.conf -p $DIR/Pid/redsocks.pid
 $DIR/Core/ss-local -s $server -p $server_port -k $password -m $method -b 127.0.0.1 -l 1025 --acl $DIR/copyright.acl -f $DIR/Pid/ss-local.pid
 #dns解析
-if [ $dns = 2 ]; then
+if [[ "$TP" = 'Fail' || "$gost" = '' || "$gost_port" = '' ]]; then
 $DIR/Core/pdnsd -c $DIR/Core/pdnsd.conf -p $DIR/Pid/pdnsd.pid
-mdns="pdnsd"
-elif [ $dns = 3 ]; then
-$DIR/Core/tdns -a 0.0.0.0 -b 1053 -c 127.0.0.1 -d 1024 -x 182.254.116.116 -p $DIR/Pid/tdns.pid
-mdns="tdns"
 fi
 echo
 echo -e "##### Gost #####"
@@ -116,15 +112,13 @@ $BIN/iptables -t nat -A nat_forward -p tcp -j REDIRECT --to-ports 1024
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 #UDP转发
 set_iptables_udp
-fi
-
-if [[ "$TP" = 'Success' && "$dns" = 1 ]]; then
 #统一发送到Google提供的DNS
-$BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 8.8.8.8:53
-mdns="Google"
+$BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 9.9.9.9:53
+mdns="IBM Quad9"
 else
 #使用模块解析DNS
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j REDIRECT --to-ports 1053
+mdns="pdnsd"
 fi
 $BIN/iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
 $BIN/iptables -t nat -A OUTPUT -j nat_lan
