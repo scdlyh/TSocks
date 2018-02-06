@@ -50,7 +50,7 @@ $DIR/Core/privoxy --pidfile $DIR/Pid/privoxy.pid $DIR/Core/Privoxy-3.0.26/privox
 $DIR/Core/redsocks -c $DIR/Core/redsocks.conf -p $DIR/Pid/redsocks.pid
 $DIR/Core/ss-local -s $server -p $server_port -k $password -m $method -b 127.0.0.1 -l 1025 --acl $DIR/copyright.acl -f $DIR/Pid/ss-local.pid -a 3004
 #pdnsd解析模块
-if [ $dns ]; then
+if [[ mdns="Pdnsd" ]]; then
 $DIR/Core/pdnsd -c $DIR/Core/pdnsd.conf -p $DIR/Pid/pdnsd.pid
 fi
 echo
@@ -134,7 +134,7 @@ for lan in $LAN
 do
 $BIN/iptables -t filter -A super_filter -d $lan -j ACCEPT
 done
-if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' && -z "$dns" ]]; then
+if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 $BIN/iptables -t filter -A super_filter -p udp -j ACCEPT
 fi
 $BIN/iptables -t filter -A super_filter -m comment --comment "丢弃所有不符合防火墙规则的数据包" -j DROP||$BIN/iptables -t filter -A super_filter -j DROP
