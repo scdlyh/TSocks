@@ -111,9 +111,11 @@ $BIN/iptables -t nat -N nat_forward
 $BIN/iptables -t nat -A nat_lan -j nat_forward
 $BIN/iptables -t nat -A nat_forward -p tcp --dport 80 -j REDIRECT --to-ports 8118
 $BIN/iptables -t nat -A nat_forward -p tcp -j REDIRECT --to-ports 1024
-if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' && -z "$dns" ]]; then
+if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 #UDP转发
 set_iptables_udp
+fi
+if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' && -z "$dns" ]]; then
 #统一发送到Google提供的DNS
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 8.8.8.8:53
 mdns="Google"
