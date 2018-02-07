@@ -1,0 +1,1 @@
+/system/bin/tc qdisc show dev rmnet_data0
