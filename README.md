@@ -46,5 +46,14 @@ wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh
 ###### UDP流量 ######
 浏览器 ⇆ redsocks2 ⇆ gost ⇆ ss-local ⇆ obfs-local
 
+#### 支持TCP方式解析的DNS ####
+#####114 DNS#####
+114.114.114.114 114.114.115.115
+#####Google DNS#####
+8.8.8.8 8.8.4.4
+#####IBM Quad9#####
+9.9.9.9
+#####OpenDNS#####
+208.67.222.222 178.79.131.110
 ### 感谢 ###
 秋水逸冰 https://github.com/teddysun/shadowsocks_install
