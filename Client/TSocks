@@ -116,9 +116,9 @@ if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 set_iptables_udp
 fi
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' && -z "$dns" ]]; then
-#统一发送到Google提供的DNS
-$BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 8.8.8.8:53
-mdns="Google"
+#统一发送到IBM Quad9提供的DNS
+$BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 9.9.9.9:53
+mdns="UDP over TCP"
 else
 #使用模块解析DNS
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j REDIRECT --to-ports 1053
