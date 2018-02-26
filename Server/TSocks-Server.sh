@@ -783,7 +783,7 @@ install_completed_gost() {
     echo -e "Your Server IP        : ${red} ${gostaddress} ${plain}"
     echo -e "Your Server Port      : ${red} ${gostport} ${plain}"
     echo -e "Your Username         : ${red} ${gostuser} ${plain}"
-    echo -e "Your Password: ${red} ${gostpwd} ${plain}"
+    echo -e "Your Password         : ${red} ${gostpwd} ${plain}"
     exit $?
 }
 
