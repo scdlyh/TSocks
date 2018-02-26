@@ -11,7 +11,7 @@
 ```
 wget --no-check-certificate -O TSocks.sh https://raw.githubusercontent.com/yiguihai/TSocks/master/Server/TSocks-Server.sh
 chmod +x TSocks.sh
-./TSocks.sh 2>&1 | tee TSocks.log
+./TSocks.sh
 ```
 BBR安装脚本
 ```
