@@ -26,7 +26,7 @@ wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh
 1. 下载好项目文件
 2. 解压出Client文件夹，并移动文件夹到/data 或者/system/bin 目录下
 3. 将Client目录和文件权限更改为全满 0777
-4. 然后执行 “开启.sh” 脚本即可
+4. 然后执行 “开启.sh” 脚本即可食用
 ##### 配置文件 ##### 
 
 - TSocks.conf #脚本主要配置文件
