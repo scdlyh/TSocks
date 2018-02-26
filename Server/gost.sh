@@ -72,7 +72,8 @@ do_start() {
         echo "$NAME (pid $PID) is already running..."
         return 0
     fi
-    setsid $DAEMON -C $CONF&&echo "$!" > $PID_FILE
+    setsid $DAEMON -C $CONF > /dev/null &
+    echo "$!" > $PID_FILE
     if check_running; then
         echo "Starting $NAME success"
     else
