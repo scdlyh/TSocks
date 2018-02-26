@@ -276,7 +276,7 @@ download_files() {
         download "${shadowsocks_libev_file}.tar.gz" "${shadowsocks_libev_url}"
     elif [ "${selected}" == "2" ]; then
         #get_gost_ver
-        get_gost_ver='v2.3';
+        gost_ver='v2.3';
         if is_64bit; then
         gost_file="gost_$(echo ${gost_ver} | sed -e 's/^[a-zA-Z]//g')_linux_amd64"
         else
