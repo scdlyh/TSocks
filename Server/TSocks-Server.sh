@@ -19,7 +19,6 @@
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
-localectl set-locale LANG=zh_CN.utf8 > /dev/null
 
 red='\033[0;31m'
 green='\033[0;32m'
@@ -181,6 +180,7 @@ autoconf_version(){
     if [ ! "$(command -v autoconf)" ]; then
         echo -e "[${green}提示信息${plain}] 开始安装 autoconf..."
         if check_sys packageManager yum; then
+            localectl set-locale LANG=zh_CN.utf8 > /dev/null
             yum install -y autoconf > /dev/null 2>&1
         elif check_sys packageManager apt; then
             apt-get -y update > /dev/null 2>&1
