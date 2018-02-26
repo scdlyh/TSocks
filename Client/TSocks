@@ -1,7 +1,6 @@
 #执行路径
-BIN=${2};DIR=${3}
-echo -e "内置命令路径: ${2}"
-echo -e "脚本执行路径: ${3}"
+BIN='/system/bin';DIR=${2}
+echo -e "脚本执行路径: ${2}"
 echo
 #脚本配置文件
 source $DIR/TSocks.conf||exit $?
