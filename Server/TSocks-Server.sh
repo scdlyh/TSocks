@@ -19,6 +19,7 @@
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
+localectl set-locale LANG=zh_CN.utf8 > /dev/null
 
 red='\033[0;31m'
 green='\033[0;32m'
