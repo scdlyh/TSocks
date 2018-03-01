@@ -5,7 +5,7 @@ echo
 #脚本配置文件
 source $DIR/TSocks.conf||exit $?
 #局域网地址
-LAN="10.0.0.0/8,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16,224.0.0.0/3,${server}/32"
+LAN="10.0.0.0/8,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16,224.0.0.0/3"
 #代理核心
 mc="redsocks pdnsd redsocks2 gost privoxy ss-local obfs-local"
 #检测内核TPROXY模块
