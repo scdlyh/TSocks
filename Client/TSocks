@@ -216,6 +216,10 @@ for run in $mc
 do
 $DIR/Core/busybox kill `$DIR/Core/busybox pgrep $run`
 done
+for xrun in $mc
+do
+$DIR/Core/busybox killall ${xrun}
+done
 for pid in $DIR/Pid/*.pid
 do
 $DIR/Core/busybox kill `$DIR/Core/busybox cat $pid`
