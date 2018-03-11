@@ -20,7 +20,7 @@ elif [ -f /usr/bin/gost ]; then
     DAEMON=/usr/bin/gost
 fi
 NAME=gost
-CONF=/usr/local/bin/gost.json
+CONF=/etc/gost/gost.json
 PID_DIR=/var/run
 PID_FILE=$PID_DIR/gost.pid
 RET_VAL=0
