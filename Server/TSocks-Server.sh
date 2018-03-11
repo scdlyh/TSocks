@@ -42,7 +42,7 @@ shadowsocks_libev_centos="https://raw.githubusercontent.com/yiguihai/TSocks/mast
 shadowsocks_libev_debian="https://raw.githubusercontent.com/yiguihai/TSocks/master/Server/shadowsocks-libev-debian.sh"
 
 gost_init="/etc/init.d/gost"
-gost_config="/usr/local/bin/gost.json"
+gost_config="/etc/gost/gost.json"
 gost_centos="https://raw.githubusercontent.com/yiguihai/TSocks/master/Server/gost.sh"
 gost_debian="https://raw.githubusercontent.com/yiguihai/TSocks/master/Server/gost-debian.sh"
 
