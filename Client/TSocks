@@ -7,7 +7,7 @@ source $DIR/TSocks.conf||exit $?
 #局域网地址
 LAN="10.0.0.0/8,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16,224.0.0.0/3"
 #代理核心
-mc="redsocks pdnsd redsocks2 gost privoxy ss-local obfs-local"
+mc="redsocks pdnsd redsocks2 gost ss-local obfs-local"
 #检测内核TPROXY模块
 $DIR/Core/busybox grep -qwE 'TPROXY' /proc/net/ip_tables_targets
 if [ $? = 0 ]; then
@@ -19,14 +19,7 @@ fi
 function make_conf ()
 {
 cat > $DIR/Core/Privoxy-3.0.26/privoxy.conf << EOF
-confdir $DIR/Core/Privoxy-3.0.26
-logdir /sdcard
-actionsfile $DIR/tsocks.action
-logfile privoxy.log
-listen-address  0.0.0.0:8118
-accept-intercepted-requests 1
-#开启调试，日志放在/sdcard/privoxy.log文件中
-#debug 1
+已去除此模块
 EOF
 }
 
@@ -45,7 +38,6 @@ $DIR/Core/obfs-local -s $server -p $server_port -b 127.0.0.1 -l 1026 --obfs $obf
 server="127.0.0.1"
 server_port="1026"
 fi
-$DIR/Core/privoxy --pidfile $DIR/Pid/privoxy.pid $DIR/Core/Privoxy-3.0.26/privoxy.conf
 $DIR/Core/redsocks -c $DIR/Core/redsocks.conf -p $DIR/Pid/redsocks.pid
 $DIR/Core/ss-local -s $server -p $server_port -k $password -m $method -b 127.0.0.1 -l 1025 --acl $DIR/copyright.acl -f $DIR/Pid/ss-local.pid -a 3004
 #pdnsd解析模块
@@ -108,7 +100,6 @@ $BIN/iptables -t nat -A nat_lan -m owner --uid-owner 3004 -j ACCEPT
 $BIN/iptables -t nat -A nat_lan -s 192.168.0.0/16 -j ACCEPT
 $BIN/iptables -t nat -N nat_forward
 $BIN/iptables -t nat -A nat_lan -j nat_forward
-$BIN/iptables -t nat -A nat_forward -p tcp --dport 80 -j REDIRECT --to-ports 8118
 $BIN/iptables -t nat -A nat_forward -p tcp -j REDIRECT --to-ports 1024
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 #UDP转发
@@ -224,7 +215,7 @@ for pid in $DIR/Pid/*.pid
 do
 $DIR/Core/busybox kill `$DIR/Core/busybox cat $pid`
 done
-$DIR/Core/busybox rm -f $DIR/Pid/*.pid
+$DIR/Core/busybox rm -f $DIR/Pid/*
 } 2> /dev/null
 
 if [ $TP = 'Fail' ]; then
@@ -234,7 +225,7 @@ echo
 fi
 
 case ${1} in
-   -s) set_iptables;make_conf;start_core;;
+   -s) set_iptables;start_core;;
    -x) kill_core;clear_iptables;;
    -c) check_core;check_iptables;;
 esac
