@@ -30,14 +30,7 @@ wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh
 ##### 配置文件 ##### 
 
 - TSocks.conf #脚本主要配置文件
-- copyright.acl #https版权问题放行文件
-- tsocks.action #http破版权文件
-
-关于版权地区限制：使用了privoxy处理，只要找到中国大陆地区的http类型的ip代理就可以破解(可免), https检测方法需要acl文件配置直连放行。(消耗流量)
-
-腾讯视频与网易云音乐必破，需要经常更换大陆的ip地址，去 
-[站大爷](http://ip.zdaye.com/?ip=&port=&adr=&checktime=&sleep=1&cunhuo=&nport=&nadr=&dengji=&https=&yys=&post=%d6%a7%b3%d6&px=3)
-随便找个 替换掉tsocks.action文件中的 58.240.53.194:80 这个代理
+- copyright.acl #版权问题放行文件
 
 #### 参考流量转发图 #### 
 
