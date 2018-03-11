@@ -56,7 +56,7 @@ echo -e "密码: ${gost_password}"
 fi
 if [[ "$TP" = 'Success' && "$gost" != '' && "$gost_port" != '' ]]; then
 $DIR/Core/UDPoverTCP/redsocks2 -c $DIR/Core/UDPoverTCP/redsocks2.conf -p $DIR/Pid/redsocks2.pid
-$DIR/Core/busybox setsid $DIR/Core/UDPoverTCP/gost -L=127.0.0.1:1231 -F=socks5://127.0.0.1:1025 -F=socks5://$up$gost:$gost_port &
+$DIR/Core/busybox setsid $DIR/Core/UDPoverTCP/gost -L=127.0.0.1:1028 -F=socks5://127.0.0.1:1025 -F=socks5://$up$gost:$gost_port &
 echo "$!" > $DIR/Pid/gost.pid
 fi
 echo
@@ -75,7 +75,7 @@ do
 $BIN/iptables -t mangle -A redsocks2_lan -d $lan -j ACCEPT
 done
 $BIN/iptables -t mangle -A redsocks2_pre -j redsocks2_lan
-$BIN/iptables -t mangle -A redsocks2_pre -p udp -j TPROXY --on-port 1230 --on-ip 127.0.0.1 --tproxy-mark 0x2333
+$BIN/iptables -t mangle -A redsocks2_pre -p udp -j TPROXY --on-port 1027 --on-ip 127.0.0.1 --tproxy-mark 0x2333
 $BIN/ip rule add fwmark 0x2333 table 123
 $BIN/ip route add local 0.0.0.0/0 dev lo table 123
 $BIN/iptables -t mangle -A PREROUTING -j redsocks2_pre
