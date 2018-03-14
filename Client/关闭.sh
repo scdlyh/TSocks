@@ -1,6 +1,12 @@
 #!/system/bin/sh
 
-#当前执行目录路径
-DIR="`pwd`"||DIR="`/system/bin/busybox pwd`"||DIR="`/system/bin/toybox pwd`"||DIR="${0%/*}" > /dev/null 2>&1||exit $?
+#自定义执行目录路径
+DIR=
 
-/system/bin/sh ${DIR}/TSocks -x ${DIR}
+[ $DIR ]||DIR="${0%/*}"
+
+if [ $? = 0 ]; then
+${DIR}/TSocks -x ${DIR}
+else
+echo '获取执行路径失败！'
+fi
