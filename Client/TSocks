@@ -82,6 +82,7 @@ $BIN/iptables -t mangle -A PREROUTING -j redsocks2_pre
 $BIN/iptables -t mangle -A OUTPUT -j redsocks2_out
 $BIN/iptables -t mangle -A redsocks2_out -j redsocks2_lan
 $BIN/iptables -t mangle -A redsocks2_out -o tun+ -j ACCEPT
+$BIN/iptables -t mangle -A redsocks2_out -s 192.168.0.0/16 -j ACCEPT
 $BIN/iptables -t mangle -A redsocks2_out -m owner --uid-owner 3004  -j ACCEPT
 $BIN/iptables -t mangle -A redsocks2_out -s 192.168.0.0/16 -j ACCEPT
 $BIN/iptables -t mangle -A redsocks2_out -p udp -j MARK --set-mark 0x2333
@@ -114,7 +115,7 @@ else
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j REDIRECT --to-ports 1053
 mdns="Pdnsd"
 fi
-$BIN/iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
+#$BIN/iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
 $BIN/iptables -t nat -A OUTPUT -j nat_lan
 
 #filter表
