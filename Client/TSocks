@@ -34,7 +34,7 @@ echo -e "加密方式: ${method}"
 if [[ "$obfs" != "" && "$obfs_host" != "" ]]; then
 echo -e "混淆方式: ${obfs}"
 echo -e "混淆Host: ${obfs_host}"
-$DIR/Core/obfs-local -s $server -p $server_port -b 127.0.0.1 -l 1026 --obfs $obfs --obfs-host $obfs_host -f $DIR/Pid/obfs-local.pid -a 3004
+$DIR/Core/obfs-local -s $server -p $server_port -b 127.0.0.1 -l 1026 --obfs $obfs --obfs-host $obfs_host -f $DIR/Pid/obfs-local.pid -a 3004||exit $?
 server="127.0.0.1"
 server_port="1026"
 fi
@@ -84,7 +84,6 @@ $BIN/iptables -t mangle -A redsocks2_out -j redsocks2_lan
 $BIN/iptables -t mangle -A redsocks2_out -o tun+ -j ACCEPT
 $BIN/iptables -t mangle -A redsocks2_out -s 192.168.0.0/16 -j ACCEPT
 $BIN/iptables -t mangle -A redsocks2_out -m owner --uid-owner 3004  -j ACCEPT
-$BIN/iptables -t mangle -A redsocks2_out -s 192.168.0.0/16 -j ACCEPT
 $BIN/iptables -t mangle -A redsocks2_out -p udp -j MARK --set-mark 0x2333
 }
 
@@ -115,7 +114,7 @@ else
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j REDIRECT --to-ports 1053
 mdns="Pdnsd"
 fi
-#$BIN/iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
+$BIN/iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
 $BIN/iptables -t nat -A OUTPUT -j nat_lan
 
 #filter表
