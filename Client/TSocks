@@ -108,11 +108,11 @@ fi
 if [ -z "$dns" ]; then
 #统一发送到IBM Quad9提供的DNS
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j DNAT --to-destination 9.9.9.9:53
-mdns="UDP over TCP"
+mdns="iptables定向"
 else
 #使用模块解析DNS
 $BIN/iptables -t nat -A nat_forward -p udp --dport 53 -j REDIRECT --to-ports 1053
-mdns="Pdnsd"
+mdns="Pdnsd模块"
 fi
 $BIN/iptables -t nat -A PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
 $BIN/iptables -t nat -A OUTPUT -j nat_lan
@@ -230,4 +230,4 @@ case ${1} in
    -c) check_core;check_iptables;;
 esac
 echo
-echo "脚本执行完毕！"
+echo "脚本执行�
