@@ -230,4 +230,4 @@ case ${1} in
    -c) check_core;check_iptables;;
 esac
 echo
-echo "脚本执行�
+echo "脚本执行完成!"
