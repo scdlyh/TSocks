@@ -122,4 +122,114 @@ $BIN/iptables -t nat -A OUTPUT -j nat_lan
 #filter表
 $BIN/iptables -t filter -N super_filter
 $BIN/iptables -t filter -A super_filter -o tun+ -j ACCEPT
-$BIN/iptables -t filter -A 
+$BIN/iptables -t filter -A super_filter -m owner --uid-owner 3004 -j ACCEPT
+$BIN/iptables -t filter -A super_filter -s 192.168.0.0/16 -j ACCEPT
+for lan in $LAN
+do
+$BIN/iptables -t filter -A super_filter -d $lan -j ACCEPT
+done
+if [[ "$TP" = 'Success' && "$gost" && "$gost_port" ]]; then
+$BIN/iptables -t filter -A super_filter -p udp -j ACCEPT
+fi
+$BIN/iptables -t filter -A super_filter -m comment --comment "丢弃所有不符合防火墙规则的数据包" -j DROP||$BIN/iptables -t filter -A super_filter -j DROP
+$BIN/iptables -t filter -A OUTPUT -j super_filter
+}
+
+
+
+
+function check_core ()
+{
+for hx in $mc
+do
+$DIR/Core/busybox pgrep $hx > /dev/null&&echo -e "✔	 $hx 正在运行"||echo -e "✘	 $hx 没有运行"
+done
+}
+
+function check_iptables ()
+{
+echo
+echo -e "❁ nat表nat_lan链:"
+$BIN/iptables -vxn -t nat -L nat_lan --line-number
+echo
+echo -e "❁ nat表nat_forward链:"
+$BIN/iptables -vxn -t nat -L nat_forward --line-number
+if [ $TP = 'Success' ]; then
+echo
+echo -e "❁ mangle表redsocks2_pre链:"
+$BIN/iptables -vxn -t mangle -L redsocks2_pre --line-number
+echo
+echo -e "❁ mangle表redsocks2_lan链:"
+$BIN/iptables -vxn -t mangle -L redsocks2_lan --line-number
+echo
+echo -e "❁ mangle表redsocks2_out链:"
+$BIN/iptables -vxn -t mangle -L redsocks2_out --line-number
+fi
+echo
+echo -e "❁ filter表super_filter链:"
+$BIN/iptables -vxn -t filter -L super_filter --line-number
+echo
+echo -e "❁ 监听信息:"
+$DIR/Core/busybox netstat -lntp
+} 2> /dev/null
+
+function clear_iptables ()
+{
+if [ $TP = 'Success' ]; then
+$BIN/ip rule del fwmark 0x2333 table 123
+$BIN/ip route del local 0.0.0.0/0 dev lo table 123
+
+$BIN/iptables -t mangle -D PREROUTING -j redsocks2_pre
+$BIN/iptables -t mangle -D OUTPUT -j redsocks2_out
+
+for xx in redsocks2_pre redsocks2_out redsocks2_lan
+do
+$BIN/iptables -t mangle -F $xx
+$BIN/iptables -t mangle -X $xx
+done
+fi
+
+$BIN/iptables -t nat -D PREROUTING -s 192.168.0.0/16 ! -d 192.168.0.0/16 -j nat_forward
+$BIN/iptables -t nat -D OUTPUT -j nat_lan
+$BIN/iptables -t filter -D OUTPUT -j super_filter
+
+for xx in nat_lan nat_forward
+do
+$BIN/iptables -t nat -F $xx
+$BIN/iptables -t nat -X $xx
+done
+#filter
+$BIN/iptables -t filter -F super_filter
+$BIN/iptables -t filter -X super_filter
+} 2> /dev/null
+
+function kill_core ()
+{
+for run in $mc
+do
+$DIR/Core/busybox kill `$DIR/Core/busybox pgrep $run`
+done
+for xrun in $mc
+do
+$DIR/Core/busybox killall ${xrun}
+done
+for pid in $DIR/Pid/*.pid
+do
+$DIR/Core/busybox kill `$DIR/Core/busybox cat $pid`
+done
+$DIR/Core/busybox rm -f $DIR/Pid/*
+} 2> /dev/null
+
+if [ $TP = 'Fail' ]; then
+echo
+echo "你的设备内核不支持TPROXY"
+echo
+fi
+
+case ${1} in
+   -s) set_iptables;start_core;;
+   -x) kill_core;clear_iptables;;
+   -c) check_core;check_iptables;;
+esac
+echo
+echo "脚本执行完成!"
