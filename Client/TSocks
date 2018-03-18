@@ -45,12 +45,12 @@ if [[ "$mdns" == "Pdnsd模块" ]]; then
 $DIR/Core/pdnsd -c $DIR/Core/pdnsd.conf -p $DIR/Pid/pdnsd.pid
 fi
 echo
-if [[ "$gost" && "$gost_port" ]]; then
+if [[ "TP" = 'Success' && "$gost" && "$gost_port" ]]; then
 echo -e "##### Gost #####"
 echo -e "服务器: ${gost}"
 echo -e "端口: ${gost_port}"
 #gost用户与密码
-if [[ "$gost_user" && "$gost_password" ]]; then
+if [[ "TP" = 'Success' && "$gost_user" && "$gost_password" ]]; then
 up="$gost_user:$gost_password@"
 echo -e "用户名: ${gost_user}"
 echo -e "密码: ${gost_password}"
@@ -122,4 +122,4 @@ $BIN/iptables -t nat -A OUTPUT -j nat_lan
 #filter表
 $BIN/iptables -t filter -N super_filter
 $BIN/iptables -t filter -A super_filter -o tun+ -j ACCEPT
-$BIN/iptables -t filter -A super_filter -m owner --uid-owner 3004 -
+$BIN/iptables -t filter -A 
