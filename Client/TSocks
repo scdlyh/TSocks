@@ -14,16 +14,11 @@ if [ $? = 0 ]; then
 TP="Success"
 else
 TP="Fail"
+echo "你的设备内核不支持TPROXY"
 fi
 
 function config_check ()
 {
-
-if [ $TP = 'Fail' ]; then
-echo
-echo "你的设备内核不支持TPROXY"
-echo
-fi
 
 if [ $ss_url ]; then
 unset obfs obfs_host
@@ -31,10 +26,55 @@ url_decode
 fi
 
 if [[ -z "$( echo -n "$server" | $DIR/Core/busybox egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' )" ]] then
-echo "不支持的服务器地址格式，请解析出IP再使用"
-echo "$server"
+echo "不支持的服务器地址格式，请解析出IP再使用\n$server"
 exit $?
 fi
+
+if [ $server_port -gt 65535 ];then
+echo "端口出错(0-65535):\n$server_port"
+exit $?
+fi
+
+case ${method} in
+aes-256-gcm) ;;
+aes-192-gcm) ;;
+aes-128-gcm) ;;
+aes-256-ctr) ;;
+aes-192-ctr) ;;
+aes-128-ctr) ;;
+aes-256-cfb) ;;
+aes-192-cfb) ;;
+aes-128-cfb) ;;
+camellia-128-cfb) ;;
+camellia-192-cfb) ;;
+camellia-256-cfb) ;;
+xchacha20-ietf-poly1305) ;;
+chacha20-ietf-poly1305) ;;
+chacha20-ietf) ;;
+chacha20) ;;
+salsa20) ;;
+rc4-md5);;
+*) echo "加密方式错误:\n$method";exit $?;;
+esac
+
+
+case ${obfs} in
+   http) ;;
+   tls) ;;
+   *) echo "混淆方式错误(http、tls):\n$obfs";exit $?;;
+esac
+
+
+if [[ -z "$( echo -n "$gost" | $DIR/Core/busybox egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' )" ]] then
+echo "不支持的服务器地址格式，请解析出IP再使用\n$gost"
+exit $?
+fi
+
+if [ $gost_port -gt 65535 ];then
+echo "端口出错(0-65535):\n$gost_port"
+exit $?
+fi
+
 }
 
 
