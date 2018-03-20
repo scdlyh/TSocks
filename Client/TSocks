@@ -16,6 +16,56 @@ else
 TP="Fail"
 fi
 
+function config_check ()
+{
+
+if [ $TP = 'Fail' ]; then
+echo
+echo "你的设备内核不支持TPROXY"
+echo
+fi
+
+if [ $ss_url ]; then
+unset obfs obfs_host
+url_decode
+fi
+
+if [[ -z "$( echo -n "$server" | $DIR/Core/busybox egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' )" ]] then
+echo "不支持的服务器地址格式，请解析出IP再使用"
+echo "$server"
+exit $?
+fi
+}
+
+
+function url_decode ()
+{
+a=${ss_url#ss:\/\/} #删除ss://
+a1=$(echo $a|base64 -d 2>&-) #解密base64得到加密方法和密码
+
+a2=${a##*@} #删除@前面段落
+
+
+method=${a1%%:*} #获得加密方式
+password=${a1##*:} #获得密码
+
+#判断有无混淆插件
+if [[ $(echo -n "$a"|grep 'plugin=obfs-local') ]] then
+a3=${a2%%?plugin=obfs-local*} #获得服务器＋端口部分
+a4=${a2##*?plugin=obfs-local} #获得混淆方式和混淆Host部分
+server=${a3%%:*} #获得服务器
+server_port=${a3##*:} #获得远程端口
+a5=${a4//%3B/;} #替换
+a6=${a5//%3D/=} #替换
+a7=${a6##*obfs-host=} #从前面段落删除
+obfs_host=${a7%%;*}
+obfs=${a6##*obfs=} #从前面段落删除
+else
+server=${a2%%:*}
+server_port=${a2##*:}
+fi
+}
+
 function make_conf ()
 {
 cat > $DIR/Core/Privoxy-3.0.26/privoxy.conf << EOF
@@ -220,14 +270,9 @@ done
 $DIR/Core/busybox rm -f $DIR/Pid/*
 } 2> /dev/null
 
-if [ $TP = 'Fail' ]; then
-echo
-echo "你的设备内核不支持TPROXY"
-echo
-fi
 
 case ${1} in
-   -s) set_iptables;start_core;;
+   -s) config_check;set_iptables;start_core;;
    -x) kill_core;clear_iptables;;
    -c) check_core;check_iptables;;
 esac
