@@ -72,7 +72,7 @@ echo "不支持的服务器地址格式，请解析出IP再使用\n$gost"
 exit $?
 fi
 
-if [ ${gost_port} && $gost_port -gt 65535 ];then
+if [[ ${gost_port} && $gost_port -gt 65535 ]];then
 echo "端口出错(0-65535):\n$gost_port"
 exit $?
 fi
